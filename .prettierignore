@@ -1,0 +1,5 @@
+# exclude formatting
+pnpm-lock.yaml
+*.md
+src/components/base/Head.astro
+src/components/base/SearchSwitch.astro
