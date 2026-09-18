@@ -73,6 +73,7 @@
     "shiki": "^3.23.0",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.21.0",
+    "typescript": "^5.8.3",
     "unist-util-visit": "^5.1.0"
   },
   "pnpm": {
