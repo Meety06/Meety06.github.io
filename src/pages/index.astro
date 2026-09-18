@@ -16,13 +16,16 @@ const showPosts = pinnedPosts.length > 0 ? pinnedPosts : await getNumPosts(POSTS
         <span class="text-4xl sm:text-5xl tracking-tight">Meety</span>
         <span class="text-muted-foreground font-light text-xl sm:text-2xl block tracking-wide">Tech Blog</span>
       </h1>
-      <ul class="mt-6 flex flex-wrap gap-2" aria-label="팀 구성">
-        {
-          ['Frontend · 2', 'Backend · 1', 'AI · 1', 'Infra · 1'].map((role) => (
-            <li class="border border-border px-3 py-1 text-sm">{role}</li>
-          ))
-        }
-      </ul>
+      <p class="mt-6 text-muted-foreground">회의 기록과 정리를 돕는 AI 서비스입니다.</p>
+      <a
+        href="https://github.com/100-hours-a-week/KTB4-6th-wiki/wiki"
+        target="_blank"
+        rel="noreferrer"
+        class="mt-4 inline-flex items-center gap-2 text-sm hover:text-primary"
+      >
+        <span class="icon-[ri--github-fill] size-5"></span>
+        GitHub Wiki
+      </a>
     </div>
 
     <SectionDivider />
