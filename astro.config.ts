@@ -11,10 +11,6 @@ import { SITE } from './src/config'
 export default defineConfig({
   site: SITE.website,
   base: SITE.base,
-  prefetch: {
-    prefetchAll: true,
-    defaultStrategy: 'viewport',
-  },
   vite: {
     plugins: [tailwindcss()],
     build: {
