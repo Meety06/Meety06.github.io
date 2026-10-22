@@ -1,82 +1,14 @@
 ---
 import Layout from '~/layouts/Layout.astro'
 import { withBase } from '~/lib/utils'
-
-const homeUrl = withBase('/')
 ---
 
-<Layout title="Page Not Found" description="404 Page">
-  <div class="not-found flex-1 flex justify-center font-mono">
-    <div class="relative z-[1] w-full global-layout-width py-12 px-8 text-sm">
-      <div class="flex items-center text-muted-foreground mb-2 animate-fade-in">
-        <span class="text-green-500 mr-2 w-4 text-center">$</span>
-        <span class="animate-typing" style="animation-delay: 0s;">Nice to meet you！</span>
-      </div>
-      <div class="flex items-center text-muted-foreground mb-2 animate-fade-in" style="animation-delay: 0.3s">
-        <span class="text-green-500 mr-2 w-4 text-center">$</span>
-        <span class="animate-typing" style="animation-delay: 0.3s">cd /home</span>
-      </div>
-      <div class="flex items-center text-muted-foreground mb-2 animate-fade-in" style="animation-delay: 0.5s">
-        <span class="text-red-500 mr-2 w-4 text-center">✗</span>
-        <span class="animate-typing" style="animation-delay: 0.5s">Error: Directory not found！</span>
-      </div>
-      <div class="flex items-center text-muted-foreground mb-2 animate-fade-in" style="animation-delay: 0.7s">
-        <span class="text-green-500 mr-2 w-4 text-center">$</span>
-        <span class="animate-typing text-muted-foreground/50" style="animation-delay: 0.7s">Available commands:</span>
-      </div>
-      <div class="flex items-center text-muted-foreground mb-2 ml-5 animate-fade-in" style="animation-delay: 0.9s">
-        <span class="text-blue-500 mr-2 w-4 text-center">›</span>
-        <span class="animate-typing cursor-pointer hover:text-foreground" style="animation-delay: 0.9s" onclick="history.back()">cd ..</span
-        >
-      </div>
-      <div class="flex items-center text-muted-foreground mb-2 ml-5 animate-fade-in" style="animation-delay: 1.1s">
-        <span class="text-blue-500 mr-2 w-4 text-center">›</span>
-        <a class="animate-typing cursor-pointer hover:text-foreground" style="animation-delay: 1.1s" href={homeUrl}>cd /</a>
-      </div>
-    </div>
+<Layout title="페이지를 찾을 수 없어요" description="요청한 페이지를 찾을 수 없습니다.">
+  <div class="blog-not-found">
+    <img src={withBase('/brand/blog/sad.png')} alt="" width="220" height="220" />
+    <p class="blog-eyebrow">404 · PAGE NOT FOUND</p>
+    <h1>이 페이지는 찾을 수 없어요</h1>
+    <p>주소가 바뀌었거나 아직 작성 중인 글일 수 있어요.<br />다른 기술 이야기를 보러 가볼까요?</p>
+    <a href={withBase('/')}>홈으로 돌아가기 →</a>
   </div>
 </Layout>
-
-<style>
-  .animate-typing {
-    animation: typing 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    overflow: hidden;
-    white-space: nowrap;
-    display: inline-block;
-  }
-
-  @keyframes typing {
-    from {
-      width: 0ch;
-    }
-    to {
-      width: var(--typing-width, 20ch);
-    }
-  }
-
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: translateY(-4px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    opacity: 0;
-    will-change: transform;
-  }
-</style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.animate-typing').forEach((el) => {
-      const text = el.textContent || ''
-      ;(el as HTMLElement).style.setProperty('--typing-width', `${text.length}ch`)
-    })
-  })
-</script>

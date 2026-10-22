@@ -1,37 +1,90 @@
 ---
-import { POSTS_CONFIG, SITE } from '~/config'
 import Layout from '~/layouts/Layout.astro'
-import SectionDivider from '~/components/base/SectionDivider.astro'
 import List from '~/components/posts/card/List.astro'
-import { getNumPosts, getPinnedPosts } from '~/lib/data'
+import { SITE } from '~/config'
+import { getAllPosts } from '~/lib/data'
+import { formatDate, withBase } from '~/lib/utils'
 
-const pinnedPosts = await getPinnedPosts()
-const showPosts = pinnedPosts.length > 0 ? pinnedPosts : await getNumPosts(POSTS_CONFIG.homePageConfig.size)
+const posts = await getAllPosts()
+const featured = posts[0]
+const tagCounts = posts.flatMap((post) => post.data.tags ?? []).reduce((counts, tag) => {
+  counts.set(tag, (counts.get(tag) ?? 0) + 1)
+  return counts
+}, new Map<string, number>())
+const popularTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8)
 ---
 
 <Layout title="홈" description={SITE.description}>
-  <div class="relative z-[1]">
-    <div class="py-8 pb-10 px-6 sm:px-8">
-      <h1 class="flex flex-col gap-2">
-        <span class="text-4xl sm:text-5xl tracking-tight">Meety</span>
-        <span class="text-muted-foreground font-light text-xl sm:text-2xl block tracking-wide">Tech Blog</span>
-      </h1>
-      <p class="mt-6 text-muted-foreground">회의 기록과 정리를 돕는 AI 서비스입니다.</p>
-      <a
-        href="https://github.com/100-hours-a-week/KTB4-6th-wiki/wiki"
-        target="_blank"
-        rel="noreferrer"
-        class="mt-4 inline-flex items-center gap-2 text-sm hover:text-primary"
-      >
-        <span class="icon-[ri--github-fill] size-5"></span>
-        GitHub Wiki
-      </a>
-    </div>
+  <div class="blog-shell">
+    <section class="blog-hero" aria-labelledby="blog-home-title">
+      <div>
+        <p class="blog-eyebrow">Meety Engineering Blog</p>
+        <h1 id="blog-home-title">회의가 끝나도<br />남는 기술을 기록합니다</h1>
+        <p class="blog-hero-copy">Meety 팀이 실시간 회의, 음성 전사, AI 요약을 만들며 부딪힌 문제와 풀어낸 과정을 있는 그대로 나눕니다.</p>
+        <div class="blog-hero-topics" aria-label="주요 주제">
+          <a class="blog-mini-chip" href={withBase('/tags/Backend')}>Backend</a>
+          <a class="blog-mini-chip" href={withBase('/tags/Frontend')}>Frontend</a>
+          <a class="blog-mini-chip" href={withBase('/tags/AI')}>AI</a>
+        </div>
+      </div>
+      <div class="blog-hero-art" aria-label="Meety 마스코트">
+        <span class="blog-bubble">오늘 회의도 잘 마치셨나요?</span>
+        <img class="blog-happy" src={withBase('/brand/blog/happy.png')} alt="" width="188" height="188" />
+        <img class="blog-wave" src={withBase('/brand/blog/wave.png')} alt="" width="188" height="188" />
+        <span class="blog-float-tag one"># WebSocket</span>
+        <span class="blog-float-tag two"># SSE</span>
+        <span class="blog-float-tag three"># Speech</span>
+      </div>
+    </section>
 
-    <SectionDivider />
-    <div class="py-8 pb-10 px-6 sm:px-8">
-      <h2 class="text-2xl sm:text-3xl tracking-tight">최근 글</h2>
-      <List posts={showPosts} type={POSTS_CONFIG.homePageConfig.type} />
+    {featured && (
+      <section class="blog-section" aria-labelledby="featured-heading">
+        <h2 id="featured-heading" class="blog-section-label">최신 글 <strong>NEW</strong></h2>
+        <a class="blog-featured" href={withBase(`/posts/${featured.id}`)}>
+          <div class="blog-feature-art">
+            <span>LATEST · MEETY ENGINEERING</span>
+            <div class="blog-feature-flow" aria-hidden="true">
+              <div><b>Audio</b><i></i><b>WebSocket</b></div>
+              <div><b>Transcript</b><i></i><b>SSE</b></div>
+            </div>
+            <img src={withBase('/brand/blog/pencil.png')} alt="" width="145" height="145" />
+          </div>
+          <div class="blog-feature-content">
+            <div class="blog-meta"><time datetime={featured.data.pubDate.toISOString()}>{formatDate(featured.data.pubDate)}</time><span>·</span><span>{featured.data.author}</span></div>
+            <h3>{featured.data.title}</h3>
+            {featured.data.description && <p>{featured.data.description}</p>}
+            <div class="blog-tag-list">{featured.data.tags?.slice(0, 4).map((tag) => <span class="blog-tag"># {tag}</span>)}</div>
+            <span class="blog-feature-read">읽어보기 <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+      </section>
+    )}
+
+    <div class="blog-home-grid">
+      <section aria-labelledby="all-posts-heading">
+        <div class="blog-list-heading"><h2 id="all-posts-heading">전체 글</h2><span>{posts.length}편</span></div>
+        <nav class="blog-topic-row" aria-label="글 주제">
+          <a class="blog-topic-link active" href={withBase('/posts')}>전체</a>
+          {popularTags.slice(0, 6).map(([tag]) => <a class="blog-topic-link" href={withBase(`/tags/${tag}`)}>{tag}</a>)}
+        </nav>
+        <List posts={posts} type="compact" />
+      </section>
+
+      <aside class="blog-sidebar" aria-label="블로그 정보">
+        <section class="blog-side-card" id="about">
+          <div class="blog-side-team"><img src={withBase('/brand/blog/glasses.png')} alt="" width="54" height="54" /><div><h2>Meety 팀</h2><small>Backend · Frontend · AI · Infra</small></div></div>
+          <p>회의 생성부터 실시간 전사, AI 요약과 리포트까지 한곳에서 다루는 회의 서비스 Meety를 만들고 있습니다.</p>
+          <a href="https://github.com/Meety06" target="_blank" rel="noopener noreferrer">팀 GitHub 둘러보기 →</a>
+        </section>
+        <section class="blog-side-card">
+          <h2>시리즈</h2>
+          {featured ? <a href={withBase(`/posts/${featured.id}`)}>{featured.data.title} →</a> : <p>곧 새로운 글을 공개합니다.</p>}
+        </section>
+        <section class="blog-side-card">
+          <h2>자주 다루는 주제</h2>
+          <div class="blog-tag-list">{popularTags.map(([tag, count]) => <a class="blog-tag" href={withBase(`/tags/${tag}`)}># {tag} · {count}</a>)}</div>
+        </section>
+      </aside>
     </div>
   </div>
 </Layout>

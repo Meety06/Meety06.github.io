@@ -31,40 +31,16 @@ interface Props {
 }
 
 const { page, tag } = Astro.props
-const description = `Posts with the tag #${tag}`
+const description = `Meety 팀의 ${tag} 관련 기술 글`
 ---
 
 <Layout title={`#${tag}`} {description}>
-  <div class="relative z-[1] py-8 pb-10 px-6 sm:px-8">
-    <div class="mb-12 md:mb-16">
-      <div class="flex flex-col gap-3">
-        <nav class="flex items-center gap-3 text-sm text-muted-foreground/80">
-          <a href={withBase('/tags')} class="group flex items-center gap-2 hover:text-primary transition-colors">
-            <span class="icon-[ph--tag-simple] w-4 h-4"></span>
-            <span>Tags</span>
-          </a>
-          <span class="text-muted-foreground/30">/</span>
-          <span class="text-foreground/90">#{tag}</span>
-        </nav>
-
-        <div class="flex gap-2 justify-between">
-          <h1 class="text-xl sm:text-3xl font-medium tracking-wide">
-            #{tag}
-          </h1>
-          <div class="flex flex-col items-end justify-center gap-1 text-sm text-muted-foreground/70">
-            <div class="flex items-center gap-2">
-              <span class="icon-[ph--article-medium] w-4 h-4"></span>
-              <span>{page.total} {page.total === 1 ? 'post' : 'posts'}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="space-y-8 fade-up">
-      <List posts={page.data} type={POSTS_CONFIG.tagsPageConfig.type} coverLayout={POSTS_CONFIG.tagsPageConfig?.coverLayout} />
-    </div>
-
-    <Pagination {page} baseUrl={`/tags/${tag}`} class="mt-12" />
+  <div class="blog-shell blog-list-page">
+    <nav class="blog-breadcrumb" aria-label="현재 위치"><a href={withBase('/tags')}>태그</a><span aria-hidden="true">/</span><span>{tag}</span></nav>
+    <p class="blog-eyebrow">TOPIC ARCHIVE</p>
+    <h1># {tag}</h1>
+    <p class="blog-list-intro">이 주제의 글 {page.total}편을 모았습니다.</p>
+    <List posts={page.data} type="compact" />
+    <Pagination {page} baseUrl={`/tags/${tag}`} />
   </div>
 </Layout>

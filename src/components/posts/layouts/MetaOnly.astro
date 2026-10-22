@@ -1,8 +1,6 @@
 ---
-import { formatDate } from '~/lib/utils'
-import { ANALYTICS_CONFIG, POSTS_CONFIG } from '~/config'
+import { formatDate, withBase } from '~/lib/utils'
 import Prose from '~/components/posts/base/Prose.astro'
-import Badge from '~/components/posts/base/Badge.astro'
 
 interface Props {
   frontmatter: any
@@ -10,74 +8,40 @@ interface Props {
   wordCount?: number
 }
 
-const { frontmatter, minutesRead, wordCount } = Astro.props
-const recommendText = POSTS_CONFIG.recommendText
+const { frontmatter, minutesRead } = Astro.props
 ---
 
-<article class="relative fade-up">
-  <div class="px-6 sm:px-8 py-4 sm:py-6 lg:py-8">
-    <div class="global-layout-width mx-auto">
-      <header>
-        <div class="space-y-4 md:space-y-5">
-          {frontmatter.description && <p class="text-sm text-muted-foreground/90 leading-relaxed">{frontmatter.description}</p>}
+<article class="blog-post-page">
+  <div class="blog-article">
+    <header class="blog-article-header">
+      <nav class="blog-breadcrumb" aria-label="현재 위치">
+        <a href={withBase('/')}>홈</a><span aria-hidden="true">/</span>
+        <a href={withBase('/posts')}>글</a><span aria-hidden="true">/</span>
+        <span>읽기</span>
+      </nav>
+      {frontmatter.tags?.[0] && <span class="blog-article-kicker"># {frontmatter.tags[0]}</span>}
+      <h1 data-pagefind-body>{frontmatter.title}</h1>
+      {frontmatter.description && <p class="blog-article-summary">{frontmatter.description}</p>}
+      <div class="blog-article-author">
+        <img src={withBase('/brand/blog/glasses.png')} alt="" width="34" height="34" />
+        <strong>{frontmatter.author || 'Meety Team'}</strong>
+        <span aria-hidden="true">·</span>
+        <time datetime={frontmatter.pubDate.toISOString()}>{formatDate(frontmatter.pubDate)}</time>
+        {minutesRead && <><span aria-hidden="true">·</span><span>{minutesRead}분 읽기</span></>}
+      </div>
+    </header>
 
-          <div class="text-xl lg:text-2xl font-semibold leading-tight" data-pagefind-body>
-            {frontmatter.title}
-          </div>
+    <div class="blog-article-body"><Prose><slot /></Prose></div>
 
-          <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-sm text-muted-foreground/85">
-            <div class="flex items-center gap-1.5">
-              <span class="icon-[ph--calendar-blank] w-4 h-4 opacity-85"></span>
-              <time datetime={frontmatter.pubDate.toISOString()}>
-                {formatDate(frontmatter.pubDate)}
-              </time>
-              {
-                frontmatter.updatedDate && (
-                  <div class="flex items-center gap-1.5">
-                    / Update
-                    <time datetime={frontmatter.updatedDate.toISOString()}>{formatDate(frontmatter.updatedDate)}</time>
-                  </div>
-                )
-              }
-            </div>
-
-            {
-              minutesRead && (
-                <div class="flex items-center gap-1.5">
-                  <span class="icon-[ph--book-open-text] w-4 h-4 opacity-85" />
-                  <span>{minutesRead} mins</span>
-                </div>
-              )
-            }
-            {
-              POSTS_CONFIG.wordCountView && wordCount && (
-                <div class="flex items-center gap-1.5">
-                  <span class="icon-[ph--pencil-simple-line] w-4 h-4 opacity-85" />
-                  <span>{wordCount} words</span>
-                </div>
-              )
-            }
-            {
-              ANALYTICS_CONFIG.vercount?.enabled && (
-                <div class="flex items-center gap-1.5">
-                  <span class="icon-[ph--eye] w-4 h-4 opacity-85" />
-                  <span id="vercount_value_page_pv">Loading</span> views
-                </div>
-              )
-            }
-          </div>
-
-          <div class="flex gap-2 sm:gap-2.5 lg:gap-3 flex-wrap">
-            {frontmatter.recommend && <Badge type="recommend" content={recommendText} />}
-            {frontmatter.tags?.map((tag: string) => <Badge type="tag" content={tag} size="sm" />)}
-          </div>
-        </div>
-        <div class="border-b border-border/60 my-8 sm:my-10 lg:my-12"></div>
-      </header>
-
-      <Prose>
-        <slot />
-      </Prose>
+    {frontmatter.tags?.length > 0 && (
+      <nav class="blog-article-tags" aria-label="이 글의 태그">
+        {frontmatter.tags.map((tag: string) => <a class="blog-topic-link" href={withBase(`/tags/${tag}`)}># {tag}</a>)}
+      </nav>
+    )}
+    <div class="blog-article-actions">
+      <button class="blog-copy-link" id="blog-copy-link" type="button" aria-label="글 링크 복사">
+        <span aria-hidden="true">↗</span><span>링크 복사</span>
+      </button>
     </div>
   </div>
 </article>
