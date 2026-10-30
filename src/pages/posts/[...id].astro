@@ -6,24 +6,27 @@ import CoverTop from '~/components/posts/layouts/CoverTop.astro'
 import PostNavigation from '~/components/posts/base/PostNavigation.astro'
 import PostFeatures from '~/components/posts/toc/PostFeatures.astro'
 import TocMobile from '~/components/posts/toc/TocMobile.astro'
-import { POSTS_CONFIG, SITE } from '~/config'
+import { COMMENT_CONFIG, POSTS_CONFIG, SITE } from '~/config'
 import { render } from 'astro:content'
-import { getAllPosts } from '~/lib/data'
+import { getAllPosts, getPreviewablePosts } from '~/lib/data'
 import SectionDivider from '~/components/base/SectionDivider.astro'
 import Comment from '~/components/posts/base/Comment.astro'
 import License from '~/components/posts/base/License.astro'
 
 export async function getStaticPaths() {
-  const sortedPosts = await getAllPosts()
-  return sortedPosts.map((post, index) => ({
-    params: { id: post.id },
-    props: {
-      post,
-      posts: sortedPosts,
-      prev: index + 1 < sortedPosts.length ? sortedPosts[index + 1] : null,
-      next: index > 0 ? sortedPosts[index - 1] : null,
-    },
-  }))
+  const [publishedPosts, previewablePosts] = await Promise.all([getAllPosts(), getPreviewablePosts()])
+  return previewablePosts.map((post) => {
+    const index = publishedPosts.findIndex((published) => published.id === post.id)
+    return {
+      params: { id: post.id },
+      props: {
+        post,
+        posts: publishedPosts,
+        prev: index >= 0 && index + 1 < publishedPosts.length ? publishedPosts[index + 1] : null,
+        next: index > 0 ? publishedPosts[index - 1] : null,
+      },
+    }
+  })
 }
 
 const { post, posts, prev, next } = Astro.props
@@ -72,10 +75,12 @@ const PostLayout = layoutMap[layoutKey]
       )
     }
     {hasValidHeadings && <PostFeatures {post} {posts} headings={filterHeadings} />}
-    <SectionDivider />
-    <div class="px-6 py-6 sm:px-8 pb-6 sm:pb-8">
-      <Comment id={post.id} title={frontmatter.title} />
-    </div>
+    {COMMENT_CONFIG.enabled && <>
+      <SectionDivider />
+      <div class="px-6 py-6 sm:px-8 pb-6 sm:pb-8">
+        <Comment id={post.id} title={frontmatter.title} />
+      </div>
+    </>}
   </div>
 </Layout>
 

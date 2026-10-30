@@ -19,8 +19,12 @@ const { frontmatter, minutesRead } = Astro.props
         <a href={withBase('/posts')}>글</a><span aria-hidden="true">/</span>
         <span>읽기</span>
       </nav>
-      {frontmatter.tags?.[0] && <span class="blog-article-kicker"># {frontmatter.tags[0]}</span>}
-      <h1 data-pagefind-body>{frontmatter.title}</h1>
+      <h1 data-pagefind-body class:list={{ 'blog-article-title-single': frontmatter.singleLineTitle }}>
+        {frontmatter.titleLines ? <>
+          <span class="blog-article-title-line">{frontmatter.titleLines[0]}</span>
+          <span class="blog-article-title-line">{frontmatter.titleLines[1]}</span>
+        </> : <>{frontmatter.title}</>}
+      </h1>
       {frontmatter.description && <p class="blog-article-summary">{frontmatter.description}</p>}
       <div class="blog-article-author">
         <img src={withBase('/brand/blog/glasses.png')} alt="" width="34" height="34" />

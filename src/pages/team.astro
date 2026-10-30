@@ -1,0 +1,38 @@
+---
+import Layout from '~/layouts/Layout.astro'
+---
+
+<Layout title="팀원 소개" description="Meety 서비스 팀원과 기술 스택을 소개합니다.">
+  <div class="blog-shell blog-team-page">
+    <section class="blog-team-section" id="about" aria-labelledby="team-heading">
+      <div class="blog-team-intro">
+        <div>
+          <p class="blog-eyebrow">THE PEOPLE BEHIND MEETY</p>
+          <h2 id="team-heading">팀원 소개</h2>
+          <p>Meety는 프론트엔드, 백엔드, AI, Cloud·인프라 담당자가 함께 만드는 회의 서비스입니다. 회의 생성부터 실시간 전사, AI 요약과 리포트까지 이어지는 경험을 고민합니다.</p>
+        </div>
+        <a href="https://github.com/Meety06" target="_blank" rel="noopener noreferrer">팀 GitHub 둘러보기 <span aria-hidden="true">↗</span></a>
+      </div>
+      <ul class="blog-team-list" aria-label="Meety 팀원">
+        <li><span>BACKEND</span><strong>jay.kim</strong><small>백엔드</small></li>
+        <li><span>FRONTEND</span><strong>chloe.seo</strong><small>프론트엔드</small></li>
+        <li><span>BACKEND</span><strong>hoon.lee</strong><small>백엔드</small></li>
+        <li><span>AI</span><strong>wiggle.wi</strong><small>AI</small></li>
+        <li><span>CLOUD</span><strong>ayla.cho</strong><small>인프라</small></li>
+      </ul>
+    </section>
+
+    <section class="blog-stack-section" id="team-stack" aria-labelledby="stack-heading">
+      <div class="blog-stack-heading">
+        <p class="blog-eyebrow">WHAT WE BUILD WITH</p>
+        <h2 id="stack-heading">기술 스택</h2>
+      </div>
+      <div class="blog-stack-grid">
+        <div><h3>Frontend</h3><p>React <span>·</span> TypeScript</p></div>
+        <div><h3>Backend</h3><p>Spring Boot</p></div>
+        <div><h3>AI</h3><p>FastAPI</p></div>
+        <div><h3>DevOps &amp; Cloud</h3><p>GitHub Actions <span>·</span> Docker <span>·</span> Nginx <span>·</span> AWS</p></div>
+      </div>
+    </section>
+  </div>
+</Layout>

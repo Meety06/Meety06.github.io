@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>회의 종료와 업로드 분리 설계</title>
+  <link rel="stylesheet" href="/embeds/recording-interactives.css" />
+  <script src="/embeds/recording-embed-theme.js" defer></script>
+</head>
+<body>
+  <main class="lab">
+    <p class="eyebrow">ISSUE #372 · DESIGN PROPOSAL</p>
+    <h1>사용자는 어느 단계까지 기다려야 할까요?</h1>
+    <p class="muted">현재 흐름과 검토 중인 분리안을 전환해 봅니다. 분리안은 아직 구현 결과가 아닙니다.</p>
+    <div class="controls" role="group" aria-label="종료 흐름 선택">
+      <button type="button" id="current" aria-pressed="true">현재 흐름</button>
+      <button type="button" id="proposed" aria-pressed="false">분리안 · 미구현</button>
+    </div>
+    <div class="panel" aria-live="polite">
+      <p class="section-label" id="caption">종료 버튼 이후</p>
+      <div class="steps" id="steps">
+        <span class="step active">PCM 마무리</span>
+        <span class="step active">MP4 구성</span>
+        <span class="step active">S3 업로드</span>
+        <span class="step past">종료 API·전환</span>
+      </div>
+      <p class="note" id="explanation">업로드가 오래 걸리거나 실패하면 종료 API와 화면 전환도 기다립니다.</p>
+    </div>
+    <div class="callout warn" id="message" style="margin-top:12px">사용자 대기 범위: 파일 준비 + 네트워크 업로드 + 종료 처리</div>
+    <p class="note">Worker 후보는 MP4 구성 중 메인 스레드 부담을 줄이기 위한 것입니다. 네트워크 업로드 속도를 높이지는 않습니다.</p>
+  </main>
+  <script>
+    const modes = {
+      current: {
+        steps: ['PCM 마무리', 'MP4 구성', 'S3 업로드', '종료 API·전환'],
+        explanation: '업로드가 오래 걸리거나 실패하면 종료 API와 화면 전환도 기다립니다.',
+        message: '사용자 대기 범위: 파일 준비 + 네트워크 업로드 + 종료 처리',
+        className: 'callout warn',
+      },
+      proposed: {
+        steps: ['PCM 저장 확인', '종료 API·전환', '전역 업로더', '다음 접속 시 재시도'],
+        explanation: '종료 후 업로드를 이어서 처리하고, 대기 상태를 IndexedDB에 남겨 중단 뒤 다시 찾습니다.',
+        message: '설계 목표: 사용자는 업로드 완료를 기다리지 않고 회의를 끝냅니다.',
+        className: 'callout good',
+      },
+    };
+    const buttons = {
+      current: document.getElementById('current'),
+      proposed: document.getElementById('proposed'),
+    };
+    function select(mode) {
+      Object.keys(buttons).forEach((key) => {
+        buttons[key].setAttribute('aria-pressed', String(key === mode));
+      });
+      const steps = document.getElementById('steps');
+      steps.replaceChildren();
+      modes[mode].steps.forEach((label, index) => {
+        const step = document.createElement('span');
+        step.className = 'step ' + (index === 1 && mode === 'proposed' ? 'past' : 'active');
+        step.textContent = label;
+        steps.appendChild(step);
+      });
+      document.getElementById('explanation').textContent = modes[mode].explanation;
+      const message = document.getElementById('message');
+      message.textContent = modes[mode].message;
+      message.className = modes[mode].className;
+    }
+    buttons.current.addEventListener('click', () => select('current'));
+    buttons.proposed.addEventListener('click', () => select('proposed'));
+  </script>
+</body>
+</html>

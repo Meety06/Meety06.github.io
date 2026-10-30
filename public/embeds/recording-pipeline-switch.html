@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>녹음 파이프라인 전후 비교</title>
+  <link rel="stylesheet" href="/embeds/recording-interactives.css" />
+  <script src="/embeds/recording-embed-theme.js" defer></script>
+</head>
+<body>
+  <main class="lab">
+    <p class="eyebrow">BEFORE / AFTER</p>
+    <h1>종료 버튼을 누른 뒤, 무슨 일이 달라졌을까요?</h1>
+    <p class="muted">캡처와 파일 준비 경로를 전환해 봅니다.</p>
+    <div class="controls" role="group" aria-label="녹음 방식 선택">
+      <button type="button" id="old" aria-pressed="false">기존 MediaRecorder</button>
+      <button type="button" id="new" aria-pressed="true">변경된 PCM 파이프라인</button>
+    </div>
+    <div class="panel" aria-live="polite">
+      <p class="section-label" id="phase">녹음 중</p>
+      <div class="steps" id="steps">
+        <span class="step active">AudioWorklet</span>
+        <span class="step active">PCM 100ms</span>
+        <span class="step active">AAC 점진 인코딩</span>
+        <span class="step past">MP4로 묶기</span>
+      </div>
+      <p class="note" id="explanation">PCM으로 전송·저장하고, AAC 프레임은 녹음 중 만듭니다. 종료 시에는 저장된 프레임을 MP4에 담습니다.</p>
+    </div>
+    <p class="section-label">5분 녹음 · 스테이징 실측 파일 준비 시간</p>
+    <div class="metrics">
+      <div class="metric"><span>기존</span><strong>6,591ms</strong></div>
+      <div class="metric"><span>변경 후</span><strong>289ms</strong></div>
+      <div class="metric emphasis"><span>감소</span><strong>약 95%</strong></div>
+    </div>
+    <p class="note">이 수치는 종료 시 파일 준비 단계의 시간입니다. 네트워크 업로드와 회의 종료 전체 대기 시간은 포함하지 않습니다.</p>
+  </main>
+  <script>
+    const paths = {
+      old: {
+        steps: ['MediaRecorder', 'WebM/Opus 청크', '종료 후 ffmpeg.wasm', 'MP4 업로드'],
+        explanation: '종료 뒤 WebM을 병합하고 ffmpeg.wasm으로 MP4를 변환합니다. 첫 변환에는 core 다운로드도 필요했습니다.',
+      },
+      new: {
+        steps: ['AudioWorklet', 'PCM 100ms', 'AAC 점진 인코딩', 'MP4로 묶기'],
+        explanation: 'PCM으로 전송·저장하고, AAC 프레임은 녹음 중 만듭니다. 종료 시에는 저장된 프레임을 MP4에 담습니다.',
+      },
+    };
+    const buttons = { old: document.getElementById('old'), new: document.getElementById('new') };
+    function select(mode) {
+      Object.keys(buttons).forEach((key) => {
+        buttons[key].setAttribute('aria-pressed', String(key === mode));
+      });
+      const container = document.getElementById('steps');
+      container.replaceChildren();
+      paths[mode].steps.forEach((label, index) => {
+        const item = document.createElement('span');
+        item.className = 'step ' + (index === 3 ? 'past' : 'active');
+        item.textContent = label;
+        container.appendChild(item);
+      });
+      document.getElementById('explanation').textContent = paths[mode].explanation;
+    }
+    buttons.old.addEventListener('click', () => select('old'));
+    buttons.new.addEventListener('click', () => select('new'));
+  </script>
+</body>
+</html>

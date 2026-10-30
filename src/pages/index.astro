@@ -20,20 +20,22 @@ const popularTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0
       <div>
         <p class="blog-eyebrow">Meety Engineering Blog</p>
         <h1 id="blog-home-title">회의가 끝나도<br />남는 기술을 기록합니다</h1>
-        <p class="blog-hero-copy">Meety 팀이 실시간 회의, 음성 전사, AI 요약을 만들며 부딪힌 문제와 풀어낸 과정을 있는 그대로 나눕니다.</p>
+        <p class="blog-hero-copy">Meety 팀이 서비스를 만들며 부딪힌 문제와 풀어낸 과정을 있는 그대로 나눕니다.</p>
         <div class="blog-hero-topics" aria-label="주요 주제">
-          <a class="blog-mini-chip" href={withBase('/tags/Backend')}>Backend</a>
-          <a class="blog-mini-chip" href={withBase('/tags/Frontend')}>Frontend</a>
-          <a class="blog-mini-chip" href={withBase('/tags/AI')}>AI</a>
+          <span class="blog-mini-chip">Backend</span>
+          <span class="blog-mini-chip">Frontend</span>
+          <span class="blog-mini-chip">AI</span>
+          <span class="blog-mini-chip">Cloud</span>
         </div>
       </div>
       <div class="blog-hero-art" aria-label="Meety 마스코트">
         <span class="blog-bubble">오늘 회의도 잘 마치셨나요?</span>
-        <img class="blog-happy" src={withBase('/brand/blog/happy.png')} alt="" width="188" height="188" />
-        <img class="blog-wave" src={withBase('/brand/blog/wave.png')} alt="" width="188" height="188" />
+        <img class="blog-excited" src={withBase('/brand/mascot/meety-01-excited-transparent.png')} alt="웃고 있는 Meety 마스코트" width="1254" height="1254" fetchpriority="high" />
         <span class="blog-float-tag one"># WebSocket</span>
         <span class="blog-float-tag two"># SSE</span>
         <span class="blog-float-tag three"># Speech</span>
+        <span class="blog-float-tag four"># PCM</span>
+        <span class="blog-float-tag five"># IndexedDB</span>
       </div>
     </section>
 
@@ -44,10 +46,10 @@ const popularTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0
           <div class="blog-feature-art">
             <span>LATEST · MEETY ENGINEERING</span>
             <div class="blog-feature-flow" aria-hidden="true">
-              <div><b>Audio</b><i></i><b>WebSocket</b></div>
-              <div><b>Transcript</b><i></i><b>SSE</b></div>
+              <div><b>녹음 청크</b><i></i><b>IndexedDB</b></div>
+              <div><b>재연결</b><i></i><b>서버</b></div>
             </div>
-            <img src={withBase('/brand/blog/pencil.png')} alt="" width="145" height="145" />
+            <img src={withBase('/brand/mascot/meety-08-thinking-transparent.png')} alt="" width="772" height="772" loading="lazy" />
           </div>
           <div class="blog-feature-content">
             <div class="blog-meta"><time datetime={featured.data.pubDate.toISOString()}>{formatDate(featured.data.pubDate)}</time><span>·</span><span>{featured.data.author}</span></div>

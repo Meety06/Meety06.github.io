@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>인터넷 연결과 녹음 청크의 두 경로</title>
+  <link rel="stylesheet" href="/embeds/recording-interactives.css" />
+  <script src="/embeds/recording-embed-theme.js" defer></script>
+  <script src="/embeds/recording-embed-resize.js" defer></script>
+  <style>
+    @font-face { font-family: 'Pretendard Variable'; src: url('/fonts/PretendardVariable.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+    @font-face { font-family: 'Geist'; src: url('/fonts/GeistVF.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+    html, body { min-height: 0; }
+    body { font-family: 'Geist', 'Pretendard Variable', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif; }
+    .lab { min-height: 0; padding: 24px; border-radius: 14px; background: var(--surface); }
+    .top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px 18px; }
+    .top h1 { margin: 0; font-size: 19px; line-height: 1.35; }
+    .top p { margin-top: 5px; color: var(--muted); font-size: 12px; }
+    .controls { gap: 6px; margin: 0; }
+    .controls button { min-height: 34px; padding: 5px 10px; font-size: 12px; }
+    .pipeline { display: grid; grid-template-columns: minmax(0, .8fr) 30px minmax(0, 1fr) 30px minmax(0, 1.55fr) 30px minmax(0, .8fr); align-items: center; gap: 7px; margin-top: 20px; }
+    .station { display: flex; min-width: 0; min-height: 96px; flex-direction: column; justify-content: center; padding: 11px 8px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); text-align: center; }
+    .station strong { color: var(--text); font-size: 14px; font-weight: 700; }
+    .station span { margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+    .station.ws { border-color: var(--accent); background: var(--accent-soft); }
+    .station.be { border-color: var(--green); background: var(--green-soft); }
+    [data-mode="gap"] .station.be { opacity: .42; }
+    .connector, .local-arrow { display: block; position: relative; width: 100%; height: 2px; color: var(--accent); background: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 12px); background-size: 12px 2px; animation: flow-horizontal .7s linear infinite; }
+    .pipeline > .connector:nth-child(4) { animation-delay: .2s; }
+    .pipeline > .connector:nth-child(6) { animation-delay: .4s; }
+    .local-arrow { animation-delay: .15s; }
+    @keyframes flow-horizontal { to { background-position: 12px 0; } }
+    @keyframes flow-vertical { to { background-position: 0 12px; } }
+    .connector.delivery .failure { display: none; }
+    [data-mode="gap"] .connector.delivery { color: var(--orange); animation: none; }
+    [data-mode="gap"] .connector.delivery .failure { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 20px; height: 20px; background: var(--surface); font-size: 18px; font-weight: 800; line-height: 1; transform: translate(-50%, -50%); }
+    .queue { min-width: 0; min-height: 96px; padding: 11px 12px 9px; border: 1.5px solid var(--accent); border-radius: 10px; background: var(--accent-soft); }
+    [data-mode="gap"] .queue { border-color: var(--orange); background: var(--orange-soft); }
+    .queue-head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+    .queue-head strong { color: var(--text); font-size: 12px; font-weight: 700; }
+    .queue-head span { color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .05em; }
+    .queue-track { position: relative; display: flex; justify-content: flex-end; gap: 5px; min-height: 34px; align-items: center; margin-top: 9px; padding: 4px 7px; border: 1px dashed var(--accent); border-radius: 7px; background: var(--surface); overflow: hidden; }
+    [data-mode="gap"] .queue-track { border-color: var(--orange); }
+    .queue-item { min-width: 36px; padding: 3px 5px; border: 1px solid var(--accent); border-radius: 5px; background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 800; text-align: center; transition: opacity .3s ease, transform .3s ease; }
+    .queue-item:nth-child(2) { transition-delay: .06s; }.queue-item:nth-child(3) { transition-delay: .12s; }
+    [data-mode="gap"] .queue-item { opacity: 0; transform: translateX(24px); }
+    .queue-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--orange); font-size: 12px; font-weight: 800; opacity: 0; transition: opacity .2s ease .2s; }
+    [data-mode="gap"] .queue-empty { opacity: 1; }
+    .queue-direction { display: flex; justify-content: space-between; margin-top: 4px; color: var(--muted); font-size: 9px; }
+    .queue-direction span:last-child { color: var(--accent); font-weight: 750; }
+    .local-path { display: grid; grid-template-columns: minmax(0, .8fr) 30px minmax(0, 1fr) 30px minmax(0, 1.55fr) 30px minmax(0, .8fr); align-items: center; gap: 7px; margin-top: 13px; }
+    .local-origin { position: relative; grid-column: 1; height: 72px; color: var(--green); }
+    .local-origin::before { content: ''; position: absolute; left: 50%; top: -13px; bottom: 50%; width: 2px; background: repeating-linear-gradient(180deg, currentColor 0 6px, transparent 6px 12px); background-size: 2px 12px; animation: flow-vertical .7s linear infinite; }
+    .local-origin::after { content: ''; position: absolute; left: 50%; right: -7px; top: 50%; height: 2px; background: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 12px); background-size: 12px 2px; animation: flow-horizontal .7s linear infinite; }
+    .local-browser { display: none; }
+    .local-arrow { grid-column: 2; color: var(--green); }
+    .station.opfs { grid-column: 3; min-height: 72px; border-color: var(--green); background: var(--green-soft); }
+    @media (prefers-reduced-motion: reduce) { .queue-item, .queue-empty { transition: none; }.connector, .local-arrow, .local-origin::before, .local-origin::after { animation: none; } }
+    @media (max-width: 700px) {
+      .lab { padding: 17px; }
+      .top h1 { font-size: 17px; }
+      .pipeline { grid-template-columns: 1fr; gap: 4px; margin-top: 16px; }
+      .station { min-height: 56px; padding: 8px; }
+      .station span { margin-top: 1px; }
+      .connector { width: 28px; justify-self: center; margin: 9px 0; transform: rotate(90deg); }
+      .queue { min-height: 90px; }
+      .queue-head strong { font-size: 12px; }
+      .local-path { grid-template-columns: 1fr; gap: 4px; }
+      .local-origin { display: none; }
+      .local-browser { display: flex; grid-column: 1; }
+      .local-arrow, .station.opfs { grid-column: 1; }
+      .local-arrow { width: 28px; justify-self: center; margin: 9px 0; transform: rotate(90deg); }
+      .station.opfs { min-height: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="lab" data-mode="ok">
+    <div class="top">
+      <div><h1>같은 청크, 두 경로</h1><p>브라우저 저장과 실시간 전송은 따로 진행됩니다.</p></div>
+      <div class="controls" role="group" aria-label="인터넷 연결 상태">
+        <button type="button" data-mode-button="ok" aria-pressed="true">정상 전달</button>
+        <button type="button" data-mode-button="gap" aria-pressed="false">인터넷 연결 끊김</button>
+      </div>
+    </div>
+    <div class="pipeline" aria-label="실시간 전송 경로">
+      <div class="station"><strong>브라우저</strong><span>청크 생성</span></div>
+      <span class="connector" aria-hidden="true"></span>
+      <div class="station ws"><strong>WebSocket</strong><span>send() 반환</span></div>
+      <span class="connector" aria-hidden="true"></span>
+      <div class="queue">
+        <div class="queue-head"><strong>브라우저 송신 큐</strong><span>FIFO</span></div>
+        <div class="queue-track" aria-label="새 청크가 왼쪽에 들어오고 오래된 청크가 오른쪽에서 먼저 나갑니다">
+          <span class="queue-item">#42</span><span class="queue-item">#41</span><span class="queue-item">#40</span>
+          <span class="queue-empty">bufferedAmount 0 B</span>
+        </div>
+        <div class="queue-direction"><span>← 새 청크</span><span>먼저 전송 →</span></div>
+      </div>
+      <span class="connector delivery" aria-hidden="true"><span class="failure">×</span></span>
+      <div class="station be"><strong>서버</strong><span>청크 수신</span></div>
+    </div>
+    <div class="local-path" aria-label="브라우저에서 OPFS로 저장하는 경로">
+      <div class="station local-browser"><strong>브라우저</strong><span>청크 생성</span></div>
+      <span class="local-origin" aria-hidden="true"></span>
+      <span class="local-arrow" aria-hidden="true"></span>
+      <div class="station opfs"><strong>OPFS</strong><span>녹음 파일용 저장</span></div>
+    </div>
+  </main>
+  <script>
+    const lab = document.querySelector('.lab');
+    document.querySelectorAll('[data-mode-button]').forEach((button) => {
+      button.addEventListener('click', () => {
+        lab.dataset.mode = button.dataset.modeButton;
+        document.querySelectorAll('[data-mode-button]').forEach((item) => {
+          item.setAttribute('aria-pressed', String(item === button));
+        });
+      });
+    });
+  </script>
+</body>
+</html>

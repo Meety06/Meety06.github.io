@@ -13,9 +13,14 @@ const posts = defineCollection({
     z
       .object({
         title: z.string(),
+        titleLines: z.tuple([z.string(), z.string()]).optional(),
+        singleLineTitle: z.boolean().default(false),
         description: z.string(),
         pubDate: z.date(),
         tags: z.array(z.string()).optional(),
+        series: z.string().optional(),
+        seriesLabel: z.string().optional(),
+        seriesOrder: z.number().int().positive().optional(),
         updatedDate: z.date().optional(),
         author: z.string().default(POSTS_CONFIG.author),
         cover: image().optional(),

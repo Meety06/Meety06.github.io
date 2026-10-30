@@ -5,14 +5,25 @@ export function postsSort(posts: CollectionEntry<'posts'>[]) {
   return posts.slice().sort((a, b) => {
     const dateA = a.data.updatedDate ?? a.data.pubDate
     const dateB = b.data.updatedDate ?? b.data.pubDate
-    return new Date(dateB).getTime() - new Date(dateA).getTime()
+    const dateDifference = new Date(dateB).getTime() - new Date(dateA).getTime()
+    if (dateDifference !== 0) return dateDifference
+    if (a.data.series && a.data.series === b.data.series && a.data.seriesOrder && b.data.seriesOrder) {
+      return a.data.seriesOrder - b.data.seriesOrder
+    }
+    return 0
   })
 }
 
-// 获取所有非草稿文章，按时间排序
+// 공개 목록과 피드에는 게시한 글만 표시합니다.
 export async function getAllPosts(): Promise<CollectionEntry<'posts'>[]> {
   const allPosts = await getCollection('posts')
   return postsSort(allPosts.filter((post) => !post.data.draft))
+}
+
+// 개발 서버에서는 초안 주소를 직접 열어 미리 볼 수 있습니다.
+export async function getPreviewablePosts(): Promise<CollectionEntry<'posts'>[]> {
+  const allPosts = await getCollection('posts')
+  return postsSort(allPosts.filter((post) => import.meta.env.DEV || !post.data.draft))
 }
 
 // 获取所有置顶文章

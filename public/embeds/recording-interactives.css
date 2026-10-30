@@ -1,0 +1,70 @@
+:root {
+  color-scheme: light;
+  --bg: #f7f9fc;
+  --surface: #fff;
+  --text: #172234;
+  --muted: #536477;
+  --border: #dce4ed;
+  --accent: #2f4c74;
+  --accent-soft: #e7eef7;
+  --green: #177c61;
+  --green-soft: #e4f5ef;
+  --orange: #ad6418;
+  --orange-soft: #fff1df;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171e28;
+  --surface: #202b39;
+  --text: #f0f4f8;
+  --muted: #bac6d2;
+  --border: #39485a;
+  --accent: #afc7e6;
+  --accent-soft: #2a3e56;
+  --green: #8bddbd;
+  --green-soft: #254d42;
+  --orange: #f3bf83;
+  --orange-soft: #59432e;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: var(--bg); color: var(--text); font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+button { font: inherit; }
+.lab { min-height: 100vh; padding: 22px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg); }
+.eyebrow { margin: 0 0 5px; color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+h1 { margin: 0 0 8px; font-size: 20px; line-height: 1.35; letter-spacing: -.035em; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
+.controls button { min-height: 38px; padding: 7px 13px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--muted); cursor: pointer; font-weight: 650; }
+.controls button:hover { border-color: var(--accent); color: var(--text); }
+.controls button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.panel { padding: 17px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.metric { padding: 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.metric span { display: block; color: var(--muted); font-size: 11px; }
+.metric strong { display: block; margin-top: 4px; font-size: 20px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.metric.emphasis { border-color: var(--orange); background: var(--orange-soft); }
+.metric.emphasis strong { color: var(--orange); }
+.note { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0; }
+.flow span { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font-size: 12px; font-weight: 700; }
+.flow b { color: var(--accent); }
+.callout { padding: 12px 14px; border-radius: 10px; background: var(--accent-soft); color: var(--text); font-size: 13px; line-height: 1.65; }
+.callout.good { background: var(--green-soft); }
+.callout.warn { background: var(--orange-soft); }
+.track { display: flex; height: 18px; margin-top: 14px; overflow: hidden; border-radius: 999px; background: var(--orange-soft); }
+.track .received { height: 100%; background: var(--green); transition: width .25s; }
+.track .lost { flex: 1; background: var(--orange); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 7px; color: var(--muted); font-size: 11px; }
+.legend i { display: inline-block; width: 9px; height: 9px; margin-right: 5px; border-radius: 2px; }
+.legend .green { background: var(--green); }.legend .orange { background: var(--orange); }
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-top: 16px; }
+.step { min-height: 59px; display: grid; place-items: center; padding: 8px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--muted); text-align: center; font-size: 12px; font-weight: 650; }
+.step.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.step.past { border-color: var(--green); background: var(--green-soft); color: var(--green); }
+.section-label { margin-top: 17px; color: var(--muted); font-size: 11px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+@media (max-width: 520px) { .lab { padding: 16px; }.metrics { gap: 6px; }.metric { padding: 9px; }.metric strong { font-size: 17px; }.steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } h1 { font-size: 18px; } }
