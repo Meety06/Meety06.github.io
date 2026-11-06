@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="530" viewBox="0 0 760 530" role="img" aria-labelledby="title desc">
+  <title id="title">재연결 시 디코더 초기화와 WebSocket 연결 순서</title>
+  <desc id="desc">백엔드는 이전 브라우저 연결을 정리하고 AI에 decoder.reset을 보냅니다. decoder.ready를 받은 뒤 101 응답을 반환하면 브라우저는 새 MediaRecorder를 시작합니다.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto">
+      <path d="M0 0 L8 4 L0 8" fill="none" stroke="#31577c" stroke-width="1.5"/>
+    </marker>
+  </defs>
+  <rect width="760" height="530" rx="16" fill="#f7f9fc"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif" font-size="14" fill="#172234">
+    <g fill="#e7eef7" stroke="#d1ddeb">
+      <rect x="40" y="24" width="160" height="46" rx="9"/>
+      <rect x="300" y="24" width="160" height="46" rx="9"/>
+      <rect x="560" y="24" width="160" height="46" rx="9"/>
+    </g>
+    <g text-anchor="middle" font-weight="700" font-size="16">
+      <text x="120" y="53">브라우저</text>
+      <text x="380" y="53">백엔드</text>
+      <text x="640" y="53">AI 서버</text>
+    </g>
+    <g stroke="#c2cfdd" stroke-dasharray="5 5">
+      <path d="M120 70V503 M380 70V503 M640 70V503"/>
+    </g>
+    <g stroke="#31577c" stroke-width="1.5" fill="none" marker-end="url(#arrow)">
+      <path d="M120 115H380"/>
+      <path d="M380 215H640"/>
+      <path d="M640 300H380"/>
+      <path d="M380 355H120"/>
+      <path d="M120 448H380"/>
+      <path d="M380 487H640"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="250" y="103">같은 녹음으로 연결 요청</text>
+      <rect x="266" y="136" width="228" height="46" rx="7" fill="#e7eef7"/>
+      <text x="380" y="155">이전 연결 정리 (4001)</text>
+      <text x="380" y="173" font-size="12">AI 세션은 유지</text>
+      <text x="510" y="203">decoder.reset</text>
+      <rect x="553" y="234" width="174" height="36" rx="7" fill="#e4f5ef"/>
+      <text x="640" y="257">새 스트림의 디코더 준비</text>
+      <text x="510" y="288">decoder.ready</text>
+      <text x="510" y="325" fill="#536477" font-size="12">5초 내 준비되지 않으면 503</text>
+      <text x="250" y="343">101 Switching Protocols</text>
+      <rect x="25" y="373" width="190" height="36" rx="7" fill="#e4f5ef"/>
+      <text x="120" y="396">새 MediaRecorder 시작</text>
+      <text x="250" y="436">새 헤더가 포함된 첫 청크</text>
+      <text x="510" y="475">현재 세대 확인 후 전달</text>
+    </g>
+  </g>
+</svg>
