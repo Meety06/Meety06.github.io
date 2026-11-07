@@ -80,6 +80,8 @@ BE A ↔ AI: STOP을 받지 못해 연결 유지
 
 AI 연결을 가진 BE가 자신의 로컬 연결과 DB 상태를 주기적으로 비교하도록 했습니다. 모든 녹음을 스캔하지 않고 로컬 연결만 100개씩 조회합니다.
 
+![Redis 장애 중 STOP 누락과 BE A의 자동 보정 시퀀스](./redis-failover-stop-reconcile.png)
+
 ```text
 로컬 활성 AI 연결 조회
 → MySQL Primary의 녹음 상태 확인

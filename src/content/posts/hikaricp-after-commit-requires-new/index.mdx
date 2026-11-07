@@ -80,6 +80,8 @@ public void createMeetingStartedNotification(...) { ... }
 
 `@Async`가 커넥션을 직접 반환하는 것은 아닙니다. 알림 작업을 넘기면서 요청 스레드가 리스너에서 빠져나오고, 트랜잭션 정리를 이어가 커넥션을 반환할 수 있게 된 것입니다. 알림 Worker가 커넥션을 기다려도 요청 스레드의 정리는 더 이상 막히지 않습니다.
 
+![개선 전후 요청 스레드의 커넥션 사용 타임라인](./hikari-connection-timeline.png)
+
 기존 `applicationTaskExecutor`는 AI 채팅도 사용하므로, 부하를 분리하고 알림의 DB 동시 실행량을 제한하기 위해 전용 Executor를 두었습니다.
 
 ## Worker 2·4·8개 비교 실험
