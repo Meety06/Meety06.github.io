@@ -1,11 +1,17 @@
 ---
 title: '다중 서버 환경에서 녹음 제어 요청은 어디로 보내야 할까?'
-description: 'Redis Owner 도입기: AI WebSocket은 BE A에 있는데, 녹음 종료 요청은 BE B로 들어왔습니다'
+description: '[다중 서버 녹음 제어 1편] Redis Owner 도입기: AI WebSocket은 BE A에 있는데, 녹음 종료 요청은 BE B로 들어왔습니다'
 pubDate: 2026-10-29
 author: 'jay.kim(김진혁)'
 tags: ['Backend', 'Redis', 'WebSocket', 'Recording']
 draft: false
+cover: './cover.png'
+series: '다중 서버 녹음 제어'
+seriesLabel: '1편'
+seriesOrder: 1
 ---
+
+![Redis Pub/Sub 커버](./cover.png)
 
 안녕하세요, Meety BE 개발자 Jay입니다.
 
@@ -185,7 +191,7 @@ Redis Owner는 "누구에게 보낼 것인가"라는 문제를 해결했지만, 
 
 정리하면, Redis Owner는 정상 흐름에서 요청과 연결이 서로 다른 서버에 있는 문제를 해결한 구조입니다. 장애 상황까지 해결한 구조는 아닙니다.
 
-이어지는 글에서는 Redis 장애 중 유실된 `STOP`을 어떻게 보정했는지 다루겠습니다.
+[이어지는 글](/posts/redis-sentinel-failover-recording/)에서는 Redis 장애 중 유실된 `STOP`을 어떻게 보정했는지 다루겠습니다.
 
 ## 참고
 

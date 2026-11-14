@@ -1,15 +1,21 @@
 ---
 title: 'Redis가 복구됐는데 녹음은 종료되지 않았다'
-description: 'Sentinel Failover와 다중 서버 녹음 제어 복구'
+description: '[다중 서버 녹음 제어 2편] Sentinel Failover와 다중 서버 녹음 제어 복구'
 pubDate: 2026-11-02
 author: 'jay.kim(김진혁)'
 tags: ['Backend', 'Redis', 'Sentinel', 'Recording']
 draft: false
+cover: './cover.png'
+series: '다중 서버 녹음 제어'
+seriesLabel: '2편'
+seriesOrder: 2
 ---
+
+![Redis Sentinel 커버](./cover.png)
 
 안녕하세요, Meety BE 개발자 Jay입니다.
 
-Meety는 Redis를 이용해 여러 BE 서버 사이에서 녹음 Owner와 오디오 ACK를 관리하고, 녹음 제어 명령을 전달합니다.
+Meety는 Redis를 이용해 여러 BE 서버 사이에서 녹음 Owner와 오디오 ACK를 관리하고, 녹음 제어 명령을 전달합니다. Owner 구조와 Pub/Sub 명령 전달은 [이전 글](/posts/redis-owner-recording-control/)에서 다뤘습니다.
 
 처음에는 Redis Master에 장애가 발생해도 Replica가 승격되면 녹음 기능도 다시 정상으로 동작할 것이라고 예상했습니다. 이를 확인하려고 Redis Master 1대, Replica 1대, Sentinel 3개로 로컬 환경을 구성하고 녹음 중에 Master를 종료했습니다.
 
@@ -35,6 +41,8 @@ Redis가 막히면 다른 서버는 Owner를 찾지 못하고, FE로 보낼 ACK�
 - **Cluster:** 데이터 분산까지 해결하지만, 지금 확인하려는 자동 장애 전환보다 범위가 넓습니다.
 
 그래서 자동 장애 전환을 검증할 대상으로 Sentinel을 골랐습니다. 로컬 실험은 Redis 7.4.10 Master 1, Replica 1, Sentinel 3(quorum 2)과 모의 FE, Fake AI로 진행했습니다.
+
+![Sentinel Failover 로컬 실험 구성](./red-a.png)
 
 ## 실험 A: Master 장애와 Replica 승격
 
@@ -76,11 +84,13 @@ BE A ↔ AI: STOP을 받지 못해 연결 유지
 
 이미 커밋된 DB는 되돌리지 않으며, BE B만 Redis에서 끊은 실험에서는 Redis가 복구된 뒤에도 AI 연결이 최소 2분 16초 열려 있었습니다. Redis가 복구돼도 발행되지 못한 명령을 누군가 다시 처리해 주지는 않기 때문입니다.
 
+![실험 C: Redis 복구 후에도 STOP이 전달되지 않는 시퀀스](./red-b.png)
+
 ## 해결 과정: STOP 자동 보정
 
 AI 연결을 가진 BE가 자신의 로컬 연결과 DB 상태를 주기적으로 비교하도록 했습니다. 모든 녹음을 스캔하지 않고 로컬 연결만 100개씩 조회합니다.
 
-![Redis 장애 중 STOP 누락과 BE A의 자동 보정 시퀀스](./redis-failover-stop-reconcile.png)
+![STOP 자동 보정 흐름과 결과](./red-c.png)
 
 ```text
 로컬 활성 AI 연결 조회

@@ -5,7 +5,10 @@ pubDate: 2026-10-31
 author: 'jay.kim(김진혁)'
 tags: ['Backend', 'HikariCP', 'Transaction']
 draft: false
+cover: './cover.png'
 ---
+
+![HikariCP 커버](./cover.png)
 
 안녕하세요, Meety BE 개발자 Jay입니다.
 
@@ -41,6 +44,8 @@ Hikari Pool 최대 10 도달, Connection acquire timeout, P99 약 30초
 ```
 
 실시간 연결이 없어도 같은 증상이 재현됐습니다. 로그에서도 Row Lock보다 커넥션 획득 대기가 지배적이었습니다. 문제는 녹음 시작 API 안에 있었습니다.
+
+![기능을 떼어 낸 부하테스트 결과 차트](./pool-a.png)
 
 ## AFTER_COMMIT과 REQUIRES_NEW에서 추가 커넥션이 필요한 이유
 
@@ -80,7 +85,7 @@ public void createMeetingStartedNotification(...) { ... }
 
 `@Async`가 커넥션을 직접 반환하는 것은 아닙니다. 알림 작업을 넘기면서 요청 스레드가 리스너에서 빠져나오고, 트랜잭션 정리를 이어가 커넥션을 반환할 수 있게 된 것입니다. 알림 Worker가 커넥션을 기다려도 요청 스레드의 정리는 더 이상 막히지 않습니다.
 
-![개선 전후 요청 스레드의 커넥션 사용 타임라인](./hikari-connection-timeline.png)
+![AFTER_COMMIT과 REQUIRES_NEW의 커넥션 흐름](./pool-b.png)
 
 기존 `applicationTaskExecutor`는 AI 채팅도 사용하므로, 부하를 분리하고 알림의 DB 동시 실행량을 제한하기 위해 전용 Executor를 두었습니다.
 
@@ -102,6 +107,8 @@ Drain Median         62ms        62ms        60ms
 알림 수신자를 팀당 1명에서 5명으로 늘린 테스트에서도 알림 250건이 모두 저장됐고, Worker 8이 4보다 나은 결과를 보이지는 않았습니다(P99 Median 126.32ms와 122.09ms). 여기서 5명은 서비스 정책이 아니라 테스트 값입니다.
 
 그래서 Worker 4를 선택했습니다. 가장 큰 값이 아니라, 요구 성능을 만족하면서 DB 커넥션 경쟁의 여유를 더 남기는 값입니다.
+
+![Worker 2·4·8 응답 시간 비교 차트](./pool-c.png)
 
 ```text
 corePoolSize = 4
