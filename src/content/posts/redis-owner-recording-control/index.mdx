@@ -15,7 +15,11 @@ seriesOrder: 1
 
 안녕하세요, Meety BE 개발자 Jay입니다.
 
-BE A가 AI 서버와 WebSocket을 연결하고 있습니다. 그런데 사용자가 녹음 종료 버튼을 누르자 그 HTTP 요청은 BE B로 들어갑니다. BE B는 DB의 녹음 상태를 바꿀 수는 있지만, 정작 AI 서버에 종료 메시지를 보낼 WebSocket은 가지고 있지 않습니다.
+Meety는 회의를 실시간으로 녹음하고, AI가 받아 적은 내용을 참여자에게 바로 보여주는 서비스입니다. 녹음이 진행되는 동안 BE 서버는 브라우저에서 받은 오디오를 AI 서버로 넘기는데, 이를 위해 녹음마다 BE와 AI 서버 사이에 WebSocket 연결을 하나씩 엽니다. 녹음을 일시정지하거나 끝낼 때도 이 연결로 AI 서버에 알려야 합니다.
+
+처음에는 BE 서버가 한 대였습니다. 모든 요청과 연결이 한 서버에 모였기 때문에, 연결 정보를 서버 메모리에 두는 것만으로 충분했습니다. 문제는 BE 서버를 두 대로 늘리면서 시작됐습니다.
+
+예를 들어 BE A가 AI 서버와 WebSocket을 연결하고 있습니다. 그런데 사용자가 녹음 종료 버튼을 누르자 그 HTTP 요청은 BE B로 들어갑니다. BE B는 DB의 녹음 상태를 바꿀 수는 있지만, 정작 AI 서버에 종료 메시지를 보낼 WebSocket은 가지고 있지 않습니다.
 
 그렇다면 BE B는 어떤 서버에 종료 명령을 전달해야 할까요?
 
@@ -25,7 +29,7 @@ BE A가 AI 서버와 WebSocket을 연결하고 있습니다. 그런데 사용자
 
 ## Meety의 실시간 녹음은 어떻게 동작하는가?
 
-Meety는 회의 중 사용자의 음성을 실시간으로 받아 AI 서버에 전달하고, 전사 결과를 참여자들에게 보여주는 서비스입니다. 녹음 하나에는 두 개의 WebSocket이 연결됩니다.
+녹음 흐름을 조금 더 자세히 보면, 녹음 하나에는 두 개의 WebSocket이 연결됩니다.
 
 - **브라우저 ↔ BE:** 오디오 청크를 받는 연결
 - **BE ↔ AI:** 오디오 청크를 전달하고 일시정지·재개·종료 같은 제어 메시지를 보내는 연결
@@ -192,11 +196,3 @@ Redis Owner는 "누구에게 보낼 것인가"라는 문제를 해결했지만, 
 정리하면, Redis Owner는 정상 흐름에서 요청과 연결이 서로 다른 서버에 있는 문제를 해결한 구조입니다. 장애 상황까지 해결한 구조는 아닙니다.
 
 [이어지는 글](/posts/redis-sentinel-failover-recording/)에서는 Redis 장애 중 유실된 `STOP`을 어떻게 보정했는지 다루겠습니다.
-
-## 참고
-
-- [PR #265](https://github.com/100-hours-a-week/KTB4-6th-BE/pull/265): 오디오 WebSocket 핸드셰이크에서 Redis Owner 기록
-- [PR #266](https://github.com/100-hours-a-week/KTB4-6th-BE/pull/266): 오디오 sequence를 Redis에 저장하고 핸드셰이크에서 복원
-- [PR #267](https://github.com/100-hours-a-week/KTB4-6th-BE/pull/267): 녹음 세션 Owner heartbeat로 갱신 및 정상 종료 시 해제
-- [PR #268](https://github.com/100-hours-a-week/KTB4-6th-BE/pull/268): 녹음 제어 명령의 서버별 Redis 채널로 Owner 서버 전달
-- [PR #269](https://github.com/100-hours-a-week/KTB4-6th-BE/pull/269): Redis Owner 구조 설계 및 구현
