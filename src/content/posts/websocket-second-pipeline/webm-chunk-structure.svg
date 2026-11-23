@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="200" viewBox="0 0 760 200" role="img" aria-labelledby="title desc">
+  <title id="title">MediaRecorder가 만드는 WebM 스트림의 청크 구조</title>
+  <desc id="desc">첫 청크에만 EBML 헤더와 트랙 정보가 있고, 이후 청크는 헤더 없이 오디오 데이터가 담긴 Cluster만 이어집니다.</desc>
+  <rect width="760" height="200" rx="16" fill="#f7f9fc"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif" font-size="14" fill="#172234">
+    <rect x="40" y="36" width="230" height="64" rx="9" fill="#e4f5ef" stroke="#bfe3d5"/>
+    <g fill="#e7eef7" stroke="#d1ddeb">
+      <rect x="286" y="36" width="120" height="64" rx="9"/>
+      <rect x="422" y="36" width="120" height="64" rx="9"/>
+      <rect x="558" y="36" width="120" height="64" rx="9"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="155" y="64" font-weight="700" font-size="16">EBML 헤더 + 트랙 정보</text>
+      <text x="155" y="85" font-size="12" fill="#536477">Opus · 48kHz · 채널 1개</text>
+      <text x="346" y="64" font-weight="700" font-size="16">Cluster</text>
+      <text x="346" y="85" font-size="12" fill="#536477">오디오 데이터</text>
+      <text x="482" y="64" font-weight="700" font-size="16">Cluster</text>
+      <text x="482" y="85" font-size="12" fill="#536477">오디오 데이터</text>
+      <text x="618" y="64" font-weight="700" font-size="16">Cluster</text>
+      <text x="618" y="85" font-size="12" fill="#536477">오디오 데이터</text>
+      <text x="706" y="74" font-weight="700" font-size="18" fill="#536477">…</text>
+    </g>
+    <g stroke="#31577c" stroke-width="1.5" fill="none">
+      <path d="M40 116V126H270V116 M155 126V136"/>
+      <path d="M286 116V126H720V116 M503 126V136"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="155" y="160">첫 청크에만 존재</text>
+      <text x="503" y="160">이후 청크: 헤더 없이 오디오 데이터만</text>
+    </g>
+  </g>
+</svg>
